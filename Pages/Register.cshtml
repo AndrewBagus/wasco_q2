@@ -1,0 +1,74 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+<h2 style="margin-bottom:30px">@ViewData["Title"]</h2>
+<div class="row">
+    <form class="form-horizontal" id="register_form">
+        @Html.AntiForgeryToken()
+        <div class="control-group col-md-7">
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label" for="full_name">Full Name <span style="color:red">*</span></label>
+                <div class="col-md-9">
+                    <input type="text" id="full_name" class="form-control cannot-null" required="" placeholder="Full Name" name="full_name" value="">
+                </div>
+            </div>       
+        </div>
+        <div class="control-group col-md-7">
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label" for="email">Email <span style="color:red">*</span></label>
+                <div class="col-md-9">
+                    <input type="email" id="email" class="form-control cannot-null" required="" placeholder="Email" name="email" value="">
+                </div>
+            </div>       
+        </div>
+        <div class="control-group col-md-7">
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label" for="password">Password <span style="color:red">*</span></label>
+                <div class="col-md-9">
+                    <input type="password" id="password" class="form-control cannot-null" required="" placeholder="Password" name="password" value="">
+                </div>
+            </div>       
+        </div>
+        <div class="control-group col-md-7" style="margin-top:0px">
+            <button type="button" class="btn btn-primary" id="btn_register"><i class="fa fa-key"></i> Submit</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script language="javascript">
+        $("#btn_register").click(function ()
+        {
+            invalid = validate_form("register_form") == 0 ? send_registration() : 0;
+        });
+
+        function send_registration() {
+            var form = $('#register_form').get(0);
+            var form_data = new FormData(form);
+            // form_data.append("__RequestVerificationToken", antiforgerytoken());
+            $.ajax({
+                url: '/register?f=register_handler',
+                type: 'post',
+                dataType: 'json',
+                data: form_data,
+                contentType: false,
+                processData: false
+            }).done(function (result) {
+                if (result.status === false) {
+                    alert('Register Failed');
+                }
+                else {
+                    var location = null;
+                    location = "/";
+                    window.location = location;
+                }
+            }).fail(function (xhr, status, error) {
+                alert('Register Failed');
+            });
+        }
+
+    </script>
+}

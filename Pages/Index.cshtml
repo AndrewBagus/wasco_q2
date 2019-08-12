@@ -1,0 +1,51 @@
+﻿@page
+@model IndexModel
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Home page";
+}
+@{
+    string name = null;
+    Claim m_user_id = User.FindFirst("m_user_id");
+    Claim full_name = User.FindFirst("full_name");
+    Claim history_id = User.FindFirst("history_id");
+
+    name = full_name != null ? full_name.Value.ToString() : null;
+}
+
+<div class="row" style="margin-top:30px">
+    <div class="col-md-12">
+    <h1>Welcome @{WriteLiteral(name);}</h1>
+    <table class='table table-xs table-condensed table-bordered' id='master_table'>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>User Full Name</th>
+                <th>Login Time</th>
+                <th>Logout Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                List<IndexModel.history_user> data = new List<IndexModel.history_user>();
+                data = IndexModel.get_history_all();
+                if(m_user_id != null)
+                {
+                    data = IndexModel.get_history(Convert.ToInt32(m_user_id.Value));
+                }
+                int count = 1;
+                @foreach (var item in data)
+                {
+                    <tr>
+                        <td> @count </td>
+                        <td> @item.full_name </td>
+                        <td> @item.login_time </td>
+                        <td> @item.logout_time </td>
+                    </tr>
+                    count++;
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
